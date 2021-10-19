@@ -105,7 +105,6 @@ def draw_idx(participant, idx):
     x_offset = dist * math.cos(angle)
     y_offset = dist * math.sin(angle)
 
-    ctx.set_source_rgb(1, 0, 0.8)
     ctx.move_to(participant.x - r/2 + x_offset, participant.y + 0.02 + y_offset)
     ctx.show_text(str(idx))
 
@@ -119,12 +118,12 @@ def calculate_participant_position(participant):
     return x, y
 
 
-# def add_noise(participants, noise_size):
-#     for i in range(len(participants)):
-#         angle = random.uniform(0, 1) * 2 * math.pi
-#         participants[i].x += noise_size * math.cos(angle)
-#         participants[i].y += noise_size * math.sin(angle)
-#     return participants
+def add_noise(participants, noise_size):
+    for i in range(len(participants)):
+        angle = random.uniform(0, 1) * 2 * math.pi
+        participants[i].x += noise_size * math.cos(angle)
+        participants[i].y += noise_size * math.sin(angle)
+    return participants
 
 
 if __name__ == "__main__":
@@ -145,22 +144,25 @@ if __name__ == "__main__":
     for participant in participants:
         participant.x, participant.y = calculate_participant_position(participant)
 
+    # # Add a little noise to make the distances bigger, if needed:
+    noise_size = 0.05
+    participant = add_noise(participants, noise_size)
+
     # Draw
     for c, participant in enumerate(participants):
         draw_participant(participant)
-        for friend in participant.friends:
-            friend_object = Participant.get_participant_by_name(participants, friend)
-            # draw_participant(friend_object) # TMP
-            draw_arrow(participant.x, participant.y, friend_object.x, friend_object.y, participant.role)
-
-    # # Add a little noise to make the distances bigger, if needed:
-    # noise_size = 0.05
-    # participant = add_noise(participants, noise_size)
-
-    for c, participant in enumerate(participants):
-        draw_idx(participant, c + 1)
+        for friend_name in participant.friends:
+            if isinstance(friend_name, str):
+                friend = Participant.get_participant_by_name(participants, friend_name)
+                # draw_participant(friend_object) # TMP
+                draw_arrow(participant.x, participant.y, friend.x, friend.y, participant.role)
 
     draw_coordinate_system()
+
+    for c, participant in enumerate(participants):
+        ctx.set_source_rgb(1, 0, 0.8)
+        # draw_idx(participant, c + 1)
+        draw_text(participant.x, participant.y, participant.name)
 
     surface.write_to_png("example.png")
 

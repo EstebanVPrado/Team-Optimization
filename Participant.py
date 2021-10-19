@@ -41,15 +41,19 @@ def load_participants_from_csv(csv):
         name = df.iloc[i, 1]
         role = df.iloc[i, 2]
 
-        teammate_preferences = []
+        friends = []
         for c in range(3):
-            teammate_preferences.append(df.iloc[i, 3 + c])
+            friend_name = df.iloc[i, 3 + c]
+            if friend_name != "":
+                friends.append(friend_name)
+            else:
+                friends.append(None)
 
         challenge_preferences = []
         for c in range(4):
             challenge_preferences.append(df.iloc[i, 6 + c])
 
-        participants.append(Participant(name, role, teammate_preferences, challenge_preferences))
+        participants.append(Participant(name, role, friends, challenge_preferences))
 
     return participants
 

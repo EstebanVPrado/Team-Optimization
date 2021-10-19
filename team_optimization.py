@@ -19,9 +19,10 @@ def penalty_total(participants, pairs, u):
         challenge_dissatisfaction = (5 - participant.c[u[k]])^2
 
         partner_dissatisfaction = 1
-        for p_name in participant.friends:
-            p_index = Participant.get_participant_index_by_name(participants, p_name)
-            partner_dissatisfaction *= 2**(1-kronecker_delta(u[p_index], u[k]))
+        for friend_name in participant.friends:
+            if isinstance(friend_name, str):
+                friend_idx = Participant.get_participant_index_by_name(participants, friend_name)
+                partner_dissatisfaction *= 2**(1-kronecker_delta(u[friend_idx], u[k]))
 
         penalty_c += challenge_dissatisfaction + partner_dissatisfaction
 
@@ -49,13 +50,14 @@ def find_pairs(participants):
     # Finding Pairs:
     pairs = []  # Pairs of people who mutually indicated they want to work together
     for participant in participants:
-        for p_name in participant.friends:
-            p = Participant.get_participant_by_name(participants, p_name)
-            if participant.name in p.friends:
-                pair = [participant.name, p_name]
-                pair.sort()
-                if pair not in pairs:
-                    pairs.append(pair)
+        for friend_name in participant.friends:
+            if isinstance(friend_name, str):
+                friend = Participant.get_participant_by_name(participants, friend_name)
+                if participant.name in friend.friends:
+                    pair = [participant.name, friend_name]
+                    pair.sort()
+                    if pair not in pairs:
+                        pairs.append(pair)
     return pairs
 
 
