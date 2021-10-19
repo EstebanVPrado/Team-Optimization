@@ -8,6 +8,7 @@ import random
 WIDTH, HEIGHT = 600, 600
 r = 0.05
 
+
 # This function is a mess. I am SURE there has to be a more elegant solution
 def find_angle(x1, y1, x2, y2):
     if x2 == x1:
@@ -34,6 +35,17 @@ def find_angle(x1, y1, x2, y2):
         return arrow_angle
 
 
+def set_color(role):
+    if role == 'physics':
+        ctx.set_source_rgb(0.7, 0.2, 0)
+    elif role == 'business':
+        ctx.set_source_rgb(0, 0.5, 0)
+    elif role == 'software':
+        ctx.set_source_rgb(0.1, 0, 1)
+    else:
+        ctx.set_source_rgb(0, 0, 0)
+
+
 def draw_arrow(x1, y1, x2, y2, role):
     # print(x1, y1, x2, y2)
     arrow_length = np.linalg.norm(np.array([x1, y1] - np.array([x2, y2]))) - r
@@ -55,24 +67,32 @@ def draw_arrow(x1, y1, x2, y2, role):
         ctx.rel_line_to(-arrowhead_length * math.cos(arrow_angle + arrowhead_angle),
                         -arrowhead_length * math.sin(arrow_angle + arrowhead_angle))
 
-        if role == 'physics':
-            ctx.set_source_rgb(0.7, 0.2, 0)
-        elif role == 'business':
-            ctx.set_source_rgb(0, 0.5, 0)
-        else:
-            ctx.set_source_rgb(0.1, 0, 1)
+        set_color(role)
         ctx.set_line_width(0.01)
         ctx.stroke()
 
 
-def draw_participant(participant):
-    if participant.role == 'physics':
-        ctx.set_source_rgb(0.7, 0.2, 0)
-    elif participant.role == 'business':
-        ctx.set_source_rgb(0, 0.5, 0)
-    else:
-        ctx.set_source_rgb(0.1, 0, 1)
+def draw_text(x, y, txt):
+    ctx.move_to(x, y)
+    ctx.show_text(txt)
 
+
+def draw_coordinate_system():
+    border = 1.2
+    draw_arrow(0, 0, border, border, "")
+    draw_arrow(0, 0, -border, border, "")
+    draw_arrow(0, 0, border, -border, "")
+    draw_arrow(0, 0, -border, -border, "")
+    border = 1
+    x_offset = 0.1
+    draw_text(border + x_offset, border, "c2")
+    draw_text(-border - x_offset, border, "c1")
+    draw_text(border + x_offset, -border, "c4")
+    draw_text(-border - x_offset, -border, "c3")
+
+
+def draw_participant(participant):
+    set_color(participant.role)
     ctx.arc(participant.x, participant.y, r, 0, 2 * math.pi)
     ctx.close_path()
     ctx.fill()
@@ -111,8 +131,9 @@ if __name__ == "__main__":
 
     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, WIDTH, HEIGHT)
     ctx = cairo.Context(surface)
-    ctx.scale(WIDTH/2, HEIGHT/2)  # Normalizing the canvas
-    ctx.translate(1, 1)
+    canvas_size = 2.5
+    ctx.scale(WIDTH/canvas_size, HEIGHT/canvas_size)  # Normalizing the canvas
+    ctx.translate(canvas_size/2, canvas_size/2)
     ctx.set_line_width(9)
 
     ctx.select_font_face("Purisa", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
@@ -129,7 +150,7 @@ if __name__ == "__main__":
         draw_participant(participant)
         for friend in participant.friends:
             friend_object = Participant.get_participant_by_name(participants, friend)
-            draw_participant(friend_object) # TMP
+            # draw_participant(friend_object) # TMP
             draw_arrow(participant.x, participant.y, friend_object.x, friend_object.y, participant.role)
 
     # # Add a little noise to make the distances bigger, if needed:
@@ -138,6 +159,8 @@ if __name__ == "__main__":
 
     for c, participant in enumerate(participants):
         draw_idx(participant, c + 1)
+
+    draw_coordinate_system()
 
     surface.write_to_png("example.png")
 

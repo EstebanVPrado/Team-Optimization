@@ -39,8 +39,7 @@ if __name__ == "__main__":
         # c = ['1', '2', '3', '4']
         # random.shuffle(c)
 
-        c = np.random.randint(3, size=4)
-        c += 1
+        c = np.random.randint(5, size=4) + 1
 
         participants[i] = ["-", name, role, p[0], p[1], p[2], c[0], c[1], c[2], c[3]]
 
