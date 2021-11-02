@@ -2,12 +2,12 @@ import pandas as pd
 
 
 class Participant:
-    def __init__(self, name, role, p, c):
+    def __init__(self, name, role, p, c, team):
         self.name = name
         self.role = role
         self.friends = p  # A list of the teammates that this person wants to work with
         self.c = c  # A list of scores for each challenge
-        self.team = ''
+        self.team = team
         self.x = 0
         self.y = 0
 
@@ -53,7 +53,9 @@ def load_participants_from_csv(csv):
         for c in range(4):
             challenge_preferences.append(df.iloc[i, 6 + c])
 
-        participants.append(Participant(name, role, friends, challenge_preferences))
+        team = df.iloc[i, 10]
+
+        participants.append(Participant(name, role, friends, challenge_preferences, team))
 
     return participants
 

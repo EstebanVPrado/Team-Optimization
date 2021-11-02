@@ -112,7 +112,8 @@ def optimize(participants, pairs, starting_vector):
 
 if __name__ == "__main__":
 
-    participants = Participant.load_participants_from_csv('dummy_data.csv')
+    # participants = Participant.load_participants_from_csv('dummy_data.csv')
+    participants = Participant.load_participants_from_csv('Team Preferences (Responses) [Cleaned Data] - Form Responses 1.csv')
     pairs = find_pairs(participants)
 
     plt.figure(figsize=(22, 10), dpi=80)
